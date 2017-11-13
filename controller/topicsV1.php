@@ -44,17 +44,39 @@ class topicsV1
         $this->table_prefix = $table_prefix;
     }
 
-    public function posts($topic_id)
+    private function hasPermission($id, $operation)
     {
-        $sql = "SELECT topic_id, forum_id FROM " . $this->table_prefix . "topics
-                WHERE topic_id = " . $topic_id;
-        $result = $this->db->sql_query($sql);
-        while ($row = $this->db->sql_fetchrow($result)) {
-            $forum_id = $row['forum_id'];
-        }
+        if ($operation == "get") {
+            $sql = "SELECT topic_id, forum_id FROM " . $this->table_prefix . "topics
+                WHERE topic_id = " . $id;
+            $result = $this->db->sql_query($sql);
+            while ($row = $this->db->sql_fetchrow($result)) {
+                $forum_id = $row['forum_id'];
+            }
 
-        if ($forum_id == null || !$this->auth->acl_get('f_read', $forum_id)) {
-            return  new JsonResponse(array("reason" => "Topic Id " . $topic_id . " does not exist."), Response::HTTP_NOT_FOUND);
+            return ($forum_id != null && $this->auth->acl_get('f_read', $forum_id));
+        }
+        return false;
+    }
+
+    public function retrieve($id)
+    {
+        if (!$this->hasPermission($id, "get")) {
+            return new JsonResponse(array("reason" => "Topic Id " . $id . " does not exist."), Response::HTTP_NOT_FOUND);
+        }
+        $sql = "SELECT topic_id, forum_id, topic_title, topic_poster
+                FROM " . $this->table_prefix . "topics
+                WHERE topic_id = " . $id;
+        $result = $this->db->sql_query($sql);
+        $row = $this->db->sql_fetchrow($result);
+        return new JsonResponse($row);
+    }
+
+    public function posts($id)
+    {
+
+        if (!$this->hasPermission($id, "get")) {
+            return new JsonResponse(array("reason" => "Topic Id " . $id . " does not exist."), Response::HTTP_NOT_FOUND);
         }
 
         $author_id = $this->request->variable('author_id', 0);
@@ -65,7 +87,7 @@ class topicsV1
         $sql = "SELECT post_id, topic_id, poster_id, forum_id, post_text,
                 bbcode_uid, bbcode_bitfield
                 FROM " . $this->table_prefix . "posts
-                WHERE topic_id = " . $topic_id;
+                WHERE topic_id = " . $id;
 
         if ($author_id > 0) {
             $sql = $sql . " AND poster_id = " . $author_id;
@@ -74,7 +96,7 @@ class topicsV1
             $sql = $sql . " AND post_username LIKE '%" . $author . "%'"; 
         }
         $sql = $sql . " ORDER BY post_time LIMIT " . $limit . " OFFSET " . $offset;
-        
+
         $result = $this->db->sql_query($sql);
 
         $response = array();

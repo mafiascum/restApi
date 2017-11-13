@@ -1,3 +1,7 @@
 topic_detail_v1_route:
-    path: /api/v1/topics/{topic_id}/posts
+    path: /api/v1/topics/{id}
+    defaults: { _controller: mafiascum.restApi.topicsV1Controller:retrieve }
+
+topic_detail_posts_v1_route:
+    path: /api/v1/topics/{id}/posts
     defaults: { _controller: mafiascum.restApi.topicsV1Controller:posts }
