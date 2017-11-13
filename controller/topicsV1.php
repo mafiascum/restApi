@@ -82,9 +82,9 @@ class topicsV1
         $author_id = $this->request->variable('author_id', 0);
         $author = $this->db->sql_escape($this->request->variable('author', ''));
         $limit = $this->request->variable('limit', 50);
-        $page = $this->request->variable('page', 1);
+        $start = $this->request->variable('start', 0);
         
-        $sql = "SELECT post_id, topic_id, poster_id, forum_id, post_text,
+        $sql = "SELECT count(*) OVER() total, post_id, topic_id, poster_id, forum_id, post_text,
                 bbcode_uid, bbcode_bitfield
                 FROM " . $this->table_prefix . "posts
                 WHERE topic_id = " . $id;
@@ -95,25 +95,35 @@ class topicsV1
         if ($author) {
             $sql = $sql . " AND post_username LIKE '%" . $author . "%'"; 
         }
-        if ($page < 1) {
-            $page = 1;
+        if ($start < 0) {
+            $start = 0;
         }
-        $sql = $sql . " ORDER BY post_time LIMIT " . $limit . " OFFSET " . $limit * ($page - 1);
+        $sql = $sql . " ORDER BY post_time LIMIT " . $limit . " OFFSET " . $start;
 
         $result = $this->db->sql_query($sql);
 
-        $response = array();
+        $row = $this->db->sql_fetchrow($result);
+        $total = intval($row['total']);
+        unset($row['total']);
+
+        $response = array(
+            "data" => array(),
+            "total" => $total,
+            "next" => $start >= $total - 1 || $total == 0 ? null : min($total, $start + $limit),
+            "prev" => $start == 0 || $total == 0 ? null : max(0, $start - $limit),
+        );
+        $response["data"][] = $row;
         while ($row = $this->db->sql_fetchrow($result)) {
-            $parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
-            $postObj = array(
-                'post_id' => $row['post_id'],
-                'topic_id' => $row['topic_id'],
-                'poster_id' => $row['poster_id'],
-                'forum_id' => $row['forum_id'],
-                //'post_text' => generate_text_for_display($row['post_text'], $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags, true),
-                'post_text' => $row['post_text'],
-            );
-            $response[] = $postObj;
+            // $parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+            // $postObj = array(
+            //     'post_id' => $row['post_id'],
+            //     'topic_id' => $row['topic_id'],
+            //     'poster_id' => $row['poster_id'],
+            //     'forum_id' => $row['forum_id'],
+            //     'post_text' => generate_text_for_display($row['post_text'], $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags, true),
+            // );
+            unset($row['total']);
+            $response["data"][] = $row;
         }
 
         return new JsonResponse($response);
