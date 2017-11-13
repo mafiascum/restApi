@@ -1,0 +1,13 @@
+services:
+    mafiascum.restApi.topicsV1Controller:
+        class: mafiascum\restApi\controller\topicsV1
+        arguments:
+            - '@controller.helper'
+            - '@template'
+            - '@request'
+            - '@dbal.conn'
+            - '@user'
+            - '@user_loader'
+            - '@language'
+            - '@auth'
+            - '%core.table_prefix%'
