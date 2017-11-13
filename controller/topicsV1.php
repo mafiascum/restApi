@@ -82,7 +82,7 @@ class topicsV1
         $author_id = $this->request->variable('author_id', 0);
         $author = $this->db->sql_escape($this->request->variable('author', ''));
         $limit = $this->request->variable('limit', 50);
-        $offset = $this->request->variable('offset', 0);
+        $page = $this->request->variable('page', 1);
         
         $sql = "SELECT post_id, topic_id, poster_id, forum_id, post_text,
                 bbcode_uid, bbcode_bitfield
@@ -95,7 +95,10 @@ class topicsV1
         if ($author) {
             $sql = $sql . " AND post_username LIKE '%" . $author . "%'"; 
         }
-        $sql = $sql . " ORDER BY post_time LIMIT " . $limit . " OFFSET " . $offset;
+        if ($page < 1) {
+            $page = 1;
+        }
+        $sql = $sql . " ORDER BY post_time LIMIT " . $limit . " OFFSET " . $limit * ($page - 1);
 
         $result = $this->db->sql_query($sql);
 
