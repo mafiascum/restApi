@@ -106,6 +106,8 @@ abstract class BaseResource implements IResource {
             }
                 
             $sql = $sql . " ORDER BY " . $order_column . " " . $order_direction;
+        } else {
+            $sql = $sql . " ORDER BY " . $this->primary_key_column;
         }
         return $sql;
     }
