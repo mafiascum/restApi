@@ -2,7 +2,7 @@
 
 namespace mafiascum\restApi\voting;
 
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'vendor/jbbcode/jbbcode/JBBCode/Parser.php';
+require_once dirname ( dirname ( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'vendor/jbbcode/jbbcode/JBBCode/Parser.php';
 
 require_once 'RawVoteTarget.php';
 
@@ -18,47 +18,45 @@ class RawVoteParser {
 	 */
 	public static function parseAllRawVoteTargetsFromPost($bb_code_str) {
 		$parser = new \JBBCode\Parser ();
-		
+
 		$builder = new \JBBCode\CodeDefinitionBuilder ( 'b', '{param}' );
-		$builder->setParseContent("false");
+		$builder->setParseContent ( "false" );
 		$parser->addCodeDefinition ( $builder->build () );
-	
+
 		$builder = new \JBBCode\CodeDefinitionBuilder ( 'vote', 'vote: {param}' );
-		$builder->setParseContent("false");
+		$builder->setParseContent ( "false" );
 		$parser->addCodeDefinition ( $builder->build () );
-	
+
 		$builder = new \JBBCode\CodeDefinitionBuilder ( 'v', 'vote: {param}' );
-		$builder->setParseContent("false");
+		$builder->setParseContent ( "false" );
 		$parser->addCodeDefinition ( $builder->build () );
-	
+
 		$builder = new \JBBCode\CodeDefinitionBuilder ( 'unvote', 'unvote:' );
-		$builder->setParseContent("false");
+		$builder->setParseContent ( "false" );
 		$parser->addCodeDefinition ( $builder->build () );
-	
+
 		$builder = new \JBBCode\CodeDefinitionBuilder ( 'uv', 'unvote:' );
-		$builder->setParseContent("false");
+		$builder->setParseContent ( "false" );
 		$parser->addCodeDefinition ( $builder->build () );
-	
+
 		// Ignore votes inside the following tags: (quote, spoilers)
-		
-	    $builder = new \JBBCode\CodeDefinitionBuilder ( 'quote', '' );
-	    $builder->setParseContent("false");
-	    $parser->addCodeDefinition ( $builder->build () );
-	    
-	    $builder = new \JBBCode\CodeDefinitionBuilder ( 'spoiler', '' );
-	    $builder->setParseContent("false");
-	    $parser->addCodeDefinition ( $builder->build () );
-	     
+
+		$builder = new \JBBCode\CodeDefinitionBuilder ( 'quote', '' );
+		$builder->setParseContent ( "false" );
+		$parser->addCodeDefinition ( $builder->build () );
+
+		$builder = new \JBBCode\CodeDefinitionBuilder ( 'spoiler', '' );
+		$builder->setParseContent ( "false" );
+		$parser->addCodeDefinition ( $builder->build () );
+
 		$parser->parse ( $bb_code_str );
 		$visitor = new VoteTagVisitor ();
 		$parser->accept ( $visitor );
-		return $visitor->getMaybeVotes();
+		return $visitor->getMaybeVotes ();
 	}
 }
-
 class VoteTagVisitor implements \JBBCode\NodeVisitor {
-	private $maybeVotes = array();
-
+	private $maybeVotes = array ();
 	public function getMaybeVotes() {
 		return $this->maybeVotes;
 	}
@@ -70,8 +68,7 @@ class VoteTagVisitor implements \JBBCode\NodeVisitor {
 	public function visitTextNode(\JBBCode\TextNode $textNode) {
 		// DO NOTHING
 	}
-	
-	
+
 	/**
 	 * Parses an element node that is potentially a vote and returns a RawVoteTarget if
 	 * a valid syntax vote is detected.
@@ -86,22 +83,18 @@ class VoteTagVisitor implements \JBBCode\NodeVisitor {
 		if ($num_matches) {
 			return new RawVoteTarget ( NULL, $elementNode->getAsBBCode () );
 		}
-	
-		$num_matches = preg_match (
-				"/[ \t]*vote:[ \t]*(.*[^ ])[ \t]*$/", $parsed_maybe_vote, $matches );
-		
-	
+
+		$num_matches = preg_match ( "/[ \t]*vote:[ \t]*(.*[^ ])[ \t]*$/", $parsed_maybe_vote, $matches );
+
 		if ($num_matches) {
 			return new RawVoteTarget ( $matches [1], $elementNode->getAsBBCode () );
 		}
 		return NULL;
 	}
-
 	public function visitElementNode(\JBBCode\ElementNode $elementNode) {
-		
-		$maybeVoteTarget = $this->fromElementNode($elementNode);
+		$maybeVoteTarget = $this->fromElementNode ( $elementNode );
 		if ($maybeVoteTarget != NULL) {
-			$this->maybeVotes[] = $maybeVoteTarget;
+			$this->maybeVotes [] = $maybeVoteTarget;
 		}
 	}
 }
