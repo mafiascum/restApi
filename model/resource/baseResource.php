@@ -131,7 +131,7 @@ abstract class BaseResource implements IResource {
         $response = array(
             "data" => $data,
             "total" => $total,
-            "next" => ($start >= $total - 1 || $total == 0) ? null : max(0, min($start + $limit, $total - 1)),
+            "next" => ($start + $limit >= $total || $total == 0) ? null : max(0, min($start + $limit, $total - 1)),
             "prev" => ($start == 0 || $total == 0) ? null : max(0, min($start - $limit, $total - 1)),
         );
         return $response;
