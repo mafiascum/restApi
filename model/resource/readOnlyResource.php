@@ -1,5 +1,5 @@
 <?php
-namespace mafiascum\restApi\model;
+namespace mafiascum\restApi\model\resource;
 
 include_once('baseResource.php');
 

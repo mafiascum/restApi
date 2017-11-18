@@ -1,5 +1,5 @@
 <?php
-namespace mafiascum\restApi\model;
+namespace mafiascum\restApi\model\resource;
 
 class TopicPostsV1Resource extends ReadOnlyResource {
     public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\auth\auth $auth, $parent_record, $parent_id) {

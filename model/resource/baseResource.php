@@ -1,6 +1,6 @@
 <?php
 
-namespace mafiascum\restApi\model;
+namespace mafiascum\restApi\model\resource;
 
 require_once('resourceInterface.php');
 

@@ -5,7 +5,7 @@ namespace mafiascum\restApi\controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-use mafiascum\restApi\model\TopicsV1Resource;
+use mafiascum\restApi\model\resource\TopicsV1Resource;
 
 function _require_all($dir) {
     // require all php files

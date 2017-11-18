@@ -1,6 +1,6 @@
 <?php
 
-namespace mafiascum\restApi\model;
+namespace mafiascum\restApi\model\resource;
 
 interface IResource {
     public function has_permission($ids, $operation);
