@@ -1,7 +1,11 @@
 <?php
+
+namespace mafiascum\restApi\models\voting;
+
 use PHPUnit\Framework\TestCase;
 use mafiascum\restApi\voting\RawVoteParser;
 use mafiascum\restApi\voting\RawVoteTarget;
+
 class RawVoteParserTest extends TestCase {
 	public function testParseAllRawVoteTargets() {
 		$post = "[b] Not a vote [/b]";

@@ -1,6 +1,6 @@
 <?php
 
-namespace mafiascum\restApi\voting;
+namespace mafiascum\restApi\models\voting;
 
 require_once dirname ( dirname ( dirname ( __FILE__ ) ) ) . DIRECTORY_SEPARATOR . 'vendor/jbbcode/jbbcode/JBBCode/Parser.php';
 

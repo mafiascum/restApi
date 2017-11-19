@@ -1,6 +1,6 @@
 <?php
 
-namespace mafiascum\restApi\voting;
+namespace mafiascum\restApi\models\voting;
 
 /**
  * Represents a player slot for the purposes of voting.
