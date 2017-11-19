@@ -2,33 +2,60 @@
 
 namespace mafiascum\restApi\model\voting;
 
+
+require_once 'PlayerSlot.php';
+require_once 'RawVoteParser.php';
+require_once 'VoteChange.php';
+require_once 'VoteNameMatcher.php';
+
+/**
+ * Represents a voting history
+ */
 class VoteHistory {
 	private $voteChangeArray = array ();
-
-	function __construct() {
+	private /*VoteNameMatcher*/ $voteNameMatcher;
+	function __construct(/*array of PlayerSlot*/ $playerSlotArray) {
+		$this->voteNameMatcher = new VoteNameMatcher ( $playerSlotArray );
 	}
 
-	public static function newVoteHistory($playerSlotArray, $dayStartPostNumber) {
-		$voteHistory = new VoteHistory ();
-		foreach ( $playerSlotArray as $playerSlot ) {
-			$voteHistory->addVoteChange($dayStartPostNumber, $playerSlot, NULL);
+	/**
+	 * Tries to parse the BBCode post and extract a vote command (vote or unvote) that
+	 * matches the list of players defined in this vote history.
+	 *
+	 * @param integer $postNumber
+	 * @param string $postUsername
+	 * @param string $postBbcode
+	 */
+	public function maybeAddFromPost($postNumber, $postUsername, $postBbcode) {
+		$voter = $this->voteNameMatcher->matchExact ( $postUsername );
+
+		if ($voter != NULL) {
+			// voter is recognized as a voting slot
+			$rawVoteTargetArray = RawVoteParser::parseAllRawVoteTargetsFromPost ( $postBbcode );
+			$current = NULL;
+			foreach ( $rawVoteTargetArray as $rawVoteTarget ) {
+				if (! $rawVoteTarget->getTargetOrNullIfUnvote ()) {
+					// unvote
+					$current = new VoteChange ( $postNumber, $voter, NULL );
+				} else {
+					// try to find a valid target
+					$target = $this->voteNameMatcher->matchExact ( $rawVoteTarget->getTargetOrNullIfUnvote () );
+					if ($target) {
+						$current = new VoteChange ( $postNumber, $voter, $target );
+					}
+				}
+			}
+			if ($current) {
+				$this->voteChangeArray [] = $current;
+			}
 		}
-		return $voteHistory;
 	}
 
-	public function addVoteChange($postNumber, $voterPlayerSlot, $targetPlayerSlot) {
-      $this->voteChangeArray[] = new VoteChange($postNumber, $voterPlayerSlot, $targetPlayerSlot);
-	}
-}
-
-class VoteChange {
-	private $postNumber;
-	private $voterPlayerSlot;
-	private $targetPlayerSlot;
-
-	public function __construct($postNumber, $voterPlayerSlot, $targetPlayerSlot) {
-      $this->postNumber = $postNumber;
-      $this->voterPlayerSlot = $voterPlayerSlot;
-      $this->$targetPlayerSlot = $targetPlayerSlot;
+	/**
+	 * @return an array of VoteChange in this history
+	 */
+	public function getHistory() {
+		return $this->voteChangeArray;
 	}
 }
+

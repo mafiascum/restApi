@@ -13,14 +13,17 @@ class VoteNameMatcher {
 		$this->playerSlotArray = $playerSlotArray;
 	}
 
-	public function match($str) {
-		foreach ( $playerSlotArray as $playerSlot ) {
+	public function matchExact($str) {
+		$str = strtolower($str);
+		foreach ( $this->playerSlotArray as $playerSlot ) {
 			if (strtolower ( $playerSlot->getMainName () ) == $str) {
 				return $playerSlot;
 			}
-			foreach ( $playerSlot->getAliases () as $alias ) {
-				if (strtolower ( $alias ) == $str) {
-					return $playerSlot;
+			if ($playerSlot->getAliases()) {
+				foreach ( $playerSlot->getAliases () as $alias ) {
+					if (strtolower ( $alias ) == $str) {
+						return $playerSlot;
+					}
 				}
 			}
 		}

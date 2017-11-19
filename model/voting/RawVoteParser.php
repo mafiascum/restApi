@@ -40,7 +40,6 @@ class RawVoteParser {
 		$parser->addCodeDefinition ( $builder->build () );
 
 		// Ignore votes inside the following tags: (quote, spoilers)
-
 		$builder = new \JBBCode\CodeDefinitionBuilder ( 'quote', '' );
 		$builder->setParseContent ( "false" );
 		$parser->addCodeDefinition ( $builder->build () );
@@ -84,13 +83,15 @@ class VoteTagVisitor implements \JBBCode\NodeVisitor {
 			return new RawVoteTarget ( NULL, $elementNode->getAsBBCode () );
 		}
 
-		$num_matches = preg_match ( "/[ \t]*vote:[ \t]*(.*[^ ])[ \t]*$/", $parsed_maybe_vote, $matches );
+		$num_matches = preg_match (
+				"/[ \t]*vote:[ \t]*(.*[^ ])[ \t]*$/", $parsed_maybe_vote, $matches );
 
 		if ($num_matches) {
 			return new RawVoteTarget ( $matches [1], $elementNode->getAsBBCode () );
 		}
 		return NULL;
 	}
+
 	public function visitElementNode(\JBBCode\ElementNode $elementNode) {
 		$maybeVoteTarget = $this->fromElementNode ( $elementNode );
 		if ($maybeVoteTarget != NULL) {
@@ -98,5 +99,4 @@ class VoteTagVisitor implements \JBBCode\NodeVisitor {
 		}
 	}
 }
-
 

@@ -16,13 +16,23 @@ class PlayerSlot {
 	public static $NO_LYNCH;
 	public function __construct($mainName, $aliases) {
 		$this->mainName = $mainName;
-		$this->aliases = $aliases;
+		$this->aliases = $aliases ? $aliases : array();
 	}
+
 	public function getAliases() {
-		return $aliases;
+		return $this->aliases;
 	}
+
 	public function getMainName() {
-		return $mainName;
+		return $this->mainName;
+	}
+
+	public function __toString() {
+		$str = $this->mainName;
+		foreach ($this->aliases as $alias) {
+			$str .= " (". $alias.")";
+		}
+		return $str;
 	}
 }
 

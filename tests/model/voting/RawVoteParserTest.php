@@ -1,5 +1,4 @@
 <?php
-
 namespace mafiascum\restApi\model\voting;
 
 use PHPUnit\Framework\TestCase;
@@ -28,4 +27,3 @@ class RawVoteParserTest extends TestCase {
 		), $actual );
 	}
 }
-
