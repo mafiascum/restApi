@@ -3,8 +3,8 @@
 namespace mafiascum\restApi\model\voting;
 
 use PHPUnit\Framework\TestCase;
-use mafiascum\restApi\voting\RawVoteParser;
-use mafiascum\restApi\voting\RawVoteTarget;
+use mafiascum\restApi\model\voting\RawVoteParser;
+use mafiascum\restApi\model\voting\RawVoteTarget;
 
 class RawVoteParserTest extends TestCase {
 	public function testParseAllRawVoteTargets() {
