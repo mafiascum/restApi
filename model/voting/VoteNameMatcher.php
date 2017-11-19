@@ -1,6 +1,6 @@
 <?php
 
-namespace mafiascum\restApi\voting;
+namespace mafiascum\restApi\model\voting;
 
 /**
  * Takes an array of PlayerSlot and returns a matching PlayerSlot for this raw target

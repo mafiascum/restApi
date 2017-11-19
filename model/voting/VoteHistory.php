@@ -1,7 +1,6 @@
 <?php
 
-namespace mafiascum\restApi\models\voting;
-
+namespace mafiascum\restApi\model\voting;
 
 class VoteHistory {
 	private $voteChangeArray = array ();

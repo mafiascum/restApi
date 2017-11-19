@@ -1,6 +1,6 @@
 <?php
 
-namespace mafiascum\restApi\models\voting;
+namespace mafiascum\restApi\model\voting;
 
 /**
  * Represents a parsed raw vote target (or unvote).

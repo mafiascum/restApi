@@ -1,6 +1,6 @@
 <?php
 
-namespace mafiascum\restApi\models\voting;
+namespace mafiascum\restApi\model\voting;
 
 use PHPUnit\Framework\TestCase;
 use mafiascum\restApi\voting\RawVoteParser;
