@@ -42,7 +42,7 @@ abstract class BaseResource implements IResource {
     protected function generate_sql($queryObj) {
         $sql = "";
         $sql = $sql . "SELECT " . $this->primary_key_column;
-
+        
         foreach ($queryObj['select'] as $alias => $column) {
             if (is_numeric($alias)) {
                 $sql = $sql . ", " . $column;
@@ -50,14 +50,14 @@ abstract class BaseResource implements IResource {
                 $sql = $sql . ", " . $column . " as " . $alias;
             }
         }
-
+        
         $sql = $sql . " FROM " . $this->table["table"] . " " . $this->table["alias"];
 
         foreach ($this->left_join_tables as $left_join_table) {
             $sql = $sql . " LEFT JOIN " . $left_join_table["from"];
             $sql = $sql . " ON " . $left_join_table["on"];
         }
-
+        
         $sql = $sql . " WHERE 1 = 1 ";
 
         foreach ($this->parent_record as $fk_column => $fk_value) {
@@ -86,7 +86,7 @@ abstract class BaseResource implements IResource {
                 $op = " LIKE ";
                 $value = "'%" . $condition[1] . "%'";
                 break;
-
+                
             case 'ilike':
                 $column = "lower(" . $column . ")";
                 $op = " LIKE ";
@@ -104,7 +104,7 @@ abstract class BaseResource implements IResource {
                 $order_column = $queryObj['order'];
                 $order_direction = 'ASC';
             }
-
+                
             $sql = $sql . " ORDER BY " . $order_column . " " . $order_direction;
         } else {
             $sql = $sql . " ORDER BY " . $this->primary_key_column;
@@ -152,11 +152,11 @@ abstract class BaseResource implements IResource {
                     $this->primary_key_column => array("in", $ids)
                 ),
             );
-
+            
             foreach ($this->permission_scopes as $type => $column) {
                 $queryObj['select'][] = $column;
             }
-
+            
             $sql = $this->generate_sql($queryObj);
             $result = $this->db->sql_query($sql);
             $permitted = $ids;
@@ -179,7 +179,7 @@ abstract class BaseResource implements IResource {
     protected function modify_read_row(&$row) {
         // no-op
     }
-
+    
     public function list($request) {
         throw new \BadMethodCallException("Not Implemented");
     }
@@ -187,7 +187,7 @@ abstract class BaseResource implements IResource {
     public function create($data) {
         throw new \BadMethodCallException("Not Implemented");
     }
-
+    
     public function retrieve($id, $request) {
         throw new \BadMethodCallException("Not Implemented");
     }
