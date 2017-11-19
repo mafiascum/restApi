@@ -14,9 +14,5 @@ interface IResource {
     public function update($id, $data);
 
     public function delete($id);
-
-    public function sub_list($parent_id, $resource_name, $request);
-
-    public function sub_retrieve($parent_id, $resource_name, $id);
 }
 ?>

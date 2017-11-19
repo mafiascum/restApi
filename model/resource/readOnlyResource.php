@@ -41,16 +41,5 @@ class ReadOnlyResource extends BaseResource {
         $this->modify_read_row($row);
         return $row;
     }
-
-    public function sub_list($parent_id, $resource_name, $request) {
-        $sub_resource_clazz = $this->sub_resources[$resource_name];
-        $sub_resource = new $sub_resource_clazz(
-            $this->db,
-            $this->auth,
-            $this->parent_record,
-            $parent_id
-        );
-        return $sub_resource->list($request);
-    }
 }
 ?>
