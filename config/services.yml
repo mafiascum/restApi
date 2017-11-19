@@ -1,6 +1,6 @@
 services:
-    mafiascum.restApi.topicsV1Controller:
-        class: mafiascum\restApi\controller\topicsV1
+    mafiascum.restApi.restApiController:
+        class: mafiascum\restApi\controller\RestApi
         arguments:
             - '@controller.helper'
             - '@template'
@@ -10,4 +10,3 @@ services:
             - '@user_loader'
             - '@language'
             - '@auth'
-            - '%core.table_prefix%'
