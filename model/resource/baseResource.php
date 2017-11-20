@@ -3,6 +3,9 @@
 namespace mafiascum\restApi\model\resource;
 
 require_once('resourceInterface.php');
+require_once(dirname(__FILE__) . "/../../utils/db.php");
+
+use mafiascum\restApi\utils\DbUtils;
 
 abstract class BaseResource implements IResource {
     protected $db;
@@ -40,7 +43,7 @@ abstract class BaseResource implements IResource {
         $this->parent_record = $parent_record;
     }
 
-    protected function generate_sql($queryObj) {
+    protected function generate_select_sql($queryObj) {
         global $table_prefix;
 
         $sql = "";
@@ -72,7 +75,7 @@ abstract class BaseResource implements IResource {
             case 'in':
                 $column = $column;
                 $op = " IN ";
-                $value = "(" .  $this->array_to_quoted_string($condition[1]) . ")";
+                $value = "(" .  DbUtils::array_to_quoted_string($condition[1]) . ")";
                 break;
             case 'equals':
                 $column = $column;
@@ -142,10 +145,6 @@ abstract class BaseResource implements IResource {
         return $response;
     }
 
-    protected function array_to_quoted_string($arr) {
-        return '\'' . join( '\', \'', $arr ) . '\'';
-    }
-
     public function has_permission($ids, $operation) {
         if ($operation == 'get') {
             $queryObj = array(
@@ -160,7 +159,7 @@ abstract class BaseResource implements IResource {
                 $queryObj['select'][] = $column;
             }
             
-            $sql = $this->generate_sql($queryObj);
+            $sql = $this->generate_select_sql($queryObj);
             $result = $this->db->sql_query($sql);
             $permitted = $ids;
             while ($row = $this->db->sql_fetchrow($result)) {
@@ -208,6 +207,14 @@ abstract class BaseResource implements IResource {
     }
 
     public function delete($id) {
+        throw new \BadMethodCallException("Not Implemented");
+    }
+
+    public function to_json($data) {
+        throw new \BadMethodCallException("Not Implemented");
+    }
+
+    public function from_json($jsonData) {
         throw new \BadMethodCallException("Not Implemented");
     }
 }

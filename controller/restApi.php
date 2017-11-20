@@ -66,7 +66,8 @@ class RestApi {
             $this->auth,
             array("topics"),
             array("topic_id" => $id),
-            $this->request
+            $this->request,
+            true
         );
         if (is_null($response)) {
             return new JsonResponse(array("reason" => "Resource with id '" . $id . "' does not exist."), Response::HTTP_NOT_FOUND);
@@ -80,7 +81,8 @@ class RestApi {
             $this->auth,
             array("topics", "posts"),
             array("topic_id" => $id),
-            $this->request
+            $this->request,
+            true
         ));
     }
 }

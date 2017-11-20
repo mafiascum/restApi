@@ -30,14 +30,29 @@ class ResourceFactory {
         return $resource;
     }
 
-    public static function list_resources($db, $auth, $path, $ids, $request) {
-        return ResourceFactory::find_resource($db, $auth, $path, $ids)->list($request);
+    public static function list_resources($db, $auth, $path, $ids, $request, $shouldSerialize = false) {
+        $resource = ResourceFactory::find_resource($db, $auth, $path, $ids);
+        $data = ResourceFactory::find_resource($db, $auth, $path, $ids)->list($request);
+        if ($shouldSerialize) {
+            $data["data"] = array_map(
+                function ($item) use ($resource) {
+                    return $resource->to_json($item);
+                },
+                $data["data"]
+            );
+        }
+        return $data;
     }
 
-    public static function retrieve_resource($db, $auth, $path, $ids, $request) {
+    public static function retrieve_resource($db, $auth, $path, $ids, $request, $shouldSerialize = false) {
         $resource = ResourceFactory::find_resource($db, $auth, $path, $ids);
         $pk_column = $resource->get_primary_key_column();
-        return $resource->retrieve($ids[$pk_column], $request);
+        $data = $resource->retrieve($ids[$pk_column], $request);
+        if ($shouldSerialize) {
+            return $resource->to_json($data);
+        } else {
+            return $data;
+        }
     }
 }
 ?>

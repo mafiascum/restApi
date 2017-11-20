@@ -14,5 +14,9 @@ interface IResource {
     public function update($id, $data);
 
     public function delete($id);
+
+    public function to_json($data);
+
+    public function from_json($jsonData);
 }
 ?>
