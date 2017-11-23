@@ -15,8 +15,8 @@ interface IResource {
 
     public function delete($id);
 
-    public function sub_list($parent_id, $resource_name, $request);
+    public function to_json($data);
 
-    public function sub_retrieve($parent_id, $resource_name, $id);
+    public function from_json($jsonData);
 }
 ?>

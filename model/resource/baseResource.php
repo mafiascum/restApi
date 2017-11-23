@@ -3,6 +3,9 @@
 namespace mafiascum\restApi\model\resource;
 
 require_once('resourceInterface.php');
+require_once(dirname(__FILE__) . "/../../utils/db.php");
+
+use mafiascum\restApi\utils\DbUtils;
 
 abstract class BaseResource implements IResource {
     protected $db;
@@ -25,21 +28,24 @@ abstract class BaseResource implements IResource {
 
     protected $parent_record;
 
-    protected function create_from_spec($db, $auth, $table, $primary_key_column, $select_columns, $left_join_tables, $query_columns, $permission_scopes, $sub_resources, $parent_record)
-    {
+    public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\auth\auth $auth, $spec, $parent_record) {
         $this->db = $db;
         $this->auth = $auth;
-        $this->table = $table;
-        $this->primary_key_column = $primary_key_column;
-        $this->select_columns = $select_columns;
-        $this->left_join_tables = $left_join_tables;
-        $this->query_columns = $query_columns;
-        $this->permission_scopes = $permission_scopes;
-        $this->sub_resources = $sub_resources;
+
+        $this->table = $spec["table"];
+        $this->select_columns = $spec["select_columns"];
+        $this->primary_key_column = $spec["primary_key_column"];
+        $this->left_join_tables = $spec["left_join_tables"];
+        $this->query_columns = $spec["query_columns"];
+        $this->permission_scopes = $spec["permission_scopes"];
+        $this->subresources = $spec["subresources"];
+
         $this->parent_record = $parent_record;
     }
 
-    protected function generate_sql($queryObj) {
+    protected function generate_select_sql($queryObj) {
+        global $table_prefix;
+
         $sql = "";
         $sql = $sql . "SELECT " . $this->primary_key_column;
         
@@ -51,10 +57,10 @@ abstract class BaseResource implements IResource {
             }
         }
         
-        $sql = $sql . " FROM " . $this->table["table"] . " " . $this->table["alias"];
+        $sql = $sql . " FROM " . $table_prefix . $this->table["from"] . " " . $this->table["alias"];
 
         foreach ($this->left_join_tables as $left_join_table) {
-            $sql = $sql . " LEFT JOIN " . $left_join_table["from"];
+            $sql = $sql . " LEFT JOIN " . $table_prefix . $left_join_table["from"];
             $sql = $sql . " ON " . $left_join_table["on"];
         }
         
@@ -69,7 +75,7 @@ abstract class BaseResource implements IResource {
             case 'in':
                 $column = $column;
                 $op = " IN ";
-                $value = "(" .  $this->array_to_quoted_string($condition[1]) . ")";
+                $value = "(" .  DbUtils::array_to_quoted_string($condition[1]) . ")";
                 break;
             case 'equals':
                 $column = $column;
@@ -139,10 +145,6 @@ abstract class BaseResource implements IResource {
         return $response;
     }
 
-    protected function array_to_quoted_string($arr) {
-        return '\'' . join( '\', \'', $arr ) . '\'';
-    }
-
     public function has_permission($ids, $operation) {
         if ($operation == 'get') {
             $queryObj = array(
@@ -157,7 +159,7 @@ abstract class BaseResource implements IResource {
                 $queryObj['select'][] = $column;
             }
             
-            $sql = $this->generate_sql($queryObj);
+            $sql = $this->generate_select_sql($queryObj);
             $result = $this->db->sql_query($sql);
             $permitted = $ids;
             while ($row = $this->db->sql_fetchrow($result)) {
@@ -174,6 +176,14 @@ abstract class BaseResource implements IResource {
             //todo
             return array();
         }
+    }
+
+    public function get_primary_key_column() {
+        return $this->primary_key_column;
+    }
+
+    public function get_subresource_def($resource_name) {
+        return $this->subresources[$resource_name];
     }
 
     protected function modify_read_row(&$row) {
@@ -200,11 +210,11 @@ abstract class BaseResource implements IResource {
         throw new \BadMethodCallException("Not Implemented");
     }
 
-    public function sub_list($parent_id, $resource_name, $request) {
+    public function to_json($data) {
         throw new \BadMethodCallException("Not Implemented");
     }
 
-    public function sub_retrieve($parent_id, $resource_name, $id) {
+    public function from_json($jsonData) {
         throw new \BadMethodCallException("Not Implemented");
     }
 }

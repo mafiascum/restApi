@@ -1,7 +1,7 @@
 <?php
 namespace mafiascum\restApi\model\resource;
 
-include_once('baseResource.php');
+require_once('baseResource.php');
 
 class ReadOnlyResource extends BaseResource {
     public function list($request) {
@@ -17,7 +17,7 @@ class ReadOnlyResource extends BaseResource {
             }
         }
         // $this->paginate_query($queryObj, $request);
-        $sql = $this->generate_sql($queryObj);
+        $sql = $this->generate_select_sql($queryObj);
         $result = $this->db->sql_query($sql);
         $response = $this->paginate_results($result, $request);
         return $response;
@@ -35,22 +35,15 @@ class ReadOnlyResource extends BaseResource {
             )
         );
         
-        $sql = $this->generate_sql($queryObj);
+        $sql = $this->generate_select_sql($queryObj);
         $result = $this->db->sql_query($sql);
         $row = $this->db->sql_fetchrow($result);
         $this->modify_read_row($row);
         return $row;
     }
 
-    public function sub_list($parent_id, $resource_name, $request) {
-        $sub_resource_clazz = $this->sub_resources[$resource_name];
-        $sub_resource = new $sub_resource_clazz(
-            $this->db,
-            $this->auth,
-            $this->parent_record,
-            $parent_id
-        );
-        return $sub_resource->list($request);
+    public function to_json($data) {
+        return $data;
     }
 }
 ?>
