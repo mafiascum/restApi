@@ -8,7 +8,6 @@ class VoteChange {
 	private $postNumber;
 	private $voterPlayerSlot;
 	private $targetPlayerSlot;
-	private $rawVoteTarget;
 
 	public function __construct(
 			$postNumber,

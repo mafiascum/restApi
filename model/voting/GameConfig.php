@@ -9,9 +9,20 @@ require_once('VoteHistory.php');
  * Game configuration to hold information about players and their roles.
  */
 class GameConfig {
+	/*
+	 * An array of PlayerSlots representing the voting and votable slots in this game.
+	 */
 	private /*array of PlayerSlot*/ $playerSlotsArray;
-	public function __construct($playerSlotsArray) {
+
+	/*
+	 * The post number where the current day starts
+	 */
+    private $currentDayStartPostNumber;
+
+	public function __construct(
+			$playerSlotsArray, $currentDayStartPostNumber) {
 		$this->playerSlotsArray = $playerSlotsArray;
+		$this->currentDayStartPostNumber = $currentDayStartPostNumber;
 	}
 
 	/**
@@ -30,7 +41,15 @@ class GameConfig {
 			$playerSlots[] = new PlayerSlot (
 					$playersInThisSlot [0], array_slice($playersInThisSlot, 1) );
 		}
-		return new GameConfig($playerSlots);
+		return new GameConfig($playerSlots, 0);
+	}
+
+	public function getPlayerSlotsArray() {
+		return $this->playerSlotsArray;
+	}
+
+	public function getCurrentDayStartPostNumber() {
+		return $this->currentDayStartPostNumber;
 	}
 
 	public function newVoteHistory() {

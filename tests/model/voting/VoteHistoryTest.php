@@ -6,6 +6,9 @@ use mafiascum\restApi\model\voting\PlayerSlot;
 use mafiascum\restApi\model\voting\VoteChange;
 use mafiascum\restApi\model\voting\VoteHistory;
 
+require_once(dirname(__FILE__) . "/../../../model/voting/VoteChange.php");
+require_once(dirname(__FILE__) . "/../../../model/voting/VoteHistory.php");
+
 class VoteHistoryTest extends TestCase {
 	public function testSimpleVoteHistory() {
 		$toto = new PlayerSlot('Toto', NULL);

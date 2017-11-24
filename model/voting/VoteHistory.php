@@ -39,7 +39,8 @@ class VoteHistory {
 					$current = new VoteChange ( $postNumber, $voter, NULL );
 				} else {
 					// try to find a valid target
-					$target = $this->voteNameMatcher->matchExact ( $rawVoteTarget->getTargetOrNullIfUnvote () );
+					$target = $this->voteNameMatcher->matchTarget (
+							$rawVoteTarget->getTargetOrNullIfUnvote () );
 					if ($target) {
 						$current = new VoteChange ( $postNumber, $voter, $target );
 					}

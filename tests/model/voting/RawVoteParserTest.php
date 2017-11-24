@@ -5,6 +5,10 @@ use PHPUnit\Framework\TestCase;
 use mafiascum\restApi\model\voting\RawVoteParser;
 use mafiascum\restApi\model\voting\RawVoteTarget;
 
+require_once(dirname(__FILE__) . "/../../../model/voting/RawVoteParser.php");
+require_once(dirname(__FILE__) . "/../../../model/voting/RawVoteTarget.php");
+
+
 class RawVoteParserTest extends TestCase {
 	public function testParseAllRawVoteTargets() {
 		$post = "[b] Not a vote [/b]";
