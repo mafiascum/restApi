@@ -16,17 +16,16 @@ class VoteCount {
 	 * Returns a VoteCount vased on the given playing player and the list of
 	 * vote changes
 	 *
-	 * @param int $firstPostOfDayNumber
-	 * @param PlayerSlot[] $playerSlotArray
+	 * @param VoteConfig $voteConfig
 	 * @param VoteChange[] $voteChangeArray
 	 */
-	public static function generateWagons($gameConfig, $voteChangeArray) {
+	public static function generateWagons($voteConfig, $voteChangeArray) {
 		$voteChangeByVotingPlayer = array ();
 
 		// Initialize everyone 'unvoting' at the first post of the day.
-		foreach ( $gameConfig->getPlayerSlotsArray () as $playerSlot ) {
+		foreach ( $voteConfig->getPlayerSlotsArray () as $playerSlot ) {
 			$voteChangeByVotingPlayer [$playerSlot->getMainName ()]
-			   = new VoteChange ( $gameConfig->getCurrentDayStartPostNumber (), $playerSlot, NULL );
+			   = new VoteChange ( $voteConfig->getDayStart (), $playerSlot, NULL );
 		}
 
 		// update first vote to current target that didn't change after that vote
@@ -85,8 +84,12 @@ class VoteCount {
 		return $this->voteChangeByWagonee;
 	}
 
-	public function toBbcode() {
+	public function toBbcode($voteConfig) {
 		$strVoteCount = "";
+		if ($voteConfig->getColor()) {
+			$strVoteCount = "[color=" . $voteConfig->getColor() . "]\n";
+		}
+		$strVoteCount .= "[area=\"Auto-Generated Vote Count\"]\n";
 		foreach ( $this->voteChangeByWagonee as $target => $voteChangeArray ) {
 			if (! $target) {
 				$target = "Not Voting";
@@ -98,6 +101,13 @@ class VoteCount {
 						$voteChange->getVoter ()->getMainName () );
 			}
 			$strVoteCount .= "\n";
+		}
+		$strVoteCount .= "[/area]\n";
+		foreach ($voteConfig->getAnnouncements() as $ann) {
+			$strVoteCount .= "\n" . $ann ."\n";
+		}
+		if ($voteConfig->getColor()) {
+			$strVoteCount .= "[/color]\n";
 		}
 		return $strVoteCount;
 	}

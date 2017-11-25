@@ -4,12 +4,12 @@ namespace mafiascum\restApi\model\voting;
 
 require_once dirname ( dirname ( dirname ( __FILE__ ) ) ) . DIRECTORY_SEPARATOR . 'vendor/jbbcode/jbbcode/JBBCode/Parser.php';
 
-require_once ('GameConfig.php');
+require_once ('VoteConfig.php');
 
 /**
  * Game configuration to hold information about players and their roles.
  */
-class GameConfigPostParser {
+class VoteConfigPostParser {
 	private /*array of PlayerSlot*/ $playerSlotsArray;
 	public function __construct($playerSlotsArray) {
 		$this->playerSlotsArray = $playerSlotsArray;
@@ -21,7 +21,9 @@ class GameConfigPostParser {
 	public static function parseFromString($bb_code_str) {
 		$parser = new \JBBCode\Parser ();
 
-		$builder = new \JBBCode\CodeDefinitionBuilder ( 'gameconfig', '{param}' );
+		$bb_code_str = html_entity_decode($bb_code_str);
+
+		$builder = new \JBBCode\CodeDefinitionBuilder ( 'voteconfig', '{param}' );
 		$builder->setParseContent ( "false" );
 		$parser->addCodeDefinition ( $builder->build () );
 
@@ -35,9 +37,9 @@ class GameConfigPostParser {
 		$parser->addCodeDefinition ( $builder->build () );
 
 		$parser->parse ( $bb_code_str );
-		$visitor = new GameConfigNodeVisitor ();
+		$visitor = new VoteConfigNodeVisitor ();
 		$parser->accept ( $visitor );
-		return $visitor->getGameConfig ();
+		return $visitor->getVoteConfig ();
 	}
 	public function getPlayerSlotsArray() {
 		return $this->playerSlotsArray;
@@ -47,10 +49,10 @@ class GameConfigPostParser {
 	}
 }
 
-class GameConfigNodeVisitor implements \JBBCode\NodeVisitor {
-	private $gameConfig;
-	public function getGameConfig() {
-		return $this->gameConfig;
+class VoteConfigNodeVisitor implements \JBBCode\NodeVisitor {
+	private $voteConfig;
+	public function getVoteConfig() {
+		return $this->voteConfig;
 	}
 	public function visitDocumentElement(\JBBCode\DocumentElement $documentElement) {
 		foreach ( $documentElement->getChildren () as $child ) {
@@ -61,10 +63,9 @@ class GameConfigNodeVisitor implements \JBBCode\NodeVisitor {
 		// DO NOTHING
 	}
 	public function visitElementNode(\JBBCode\ElementNode $elementNode) {
-		if ('gameconfig' == strtolower ( $elementNode->getTagName () )) {
-			$content = trim ( $elementNode->getAsHTML () );
-			$this->gameConfig = GameConfig::parseFromString ($content);
+		if ('voteconfig' == strtolower ( $elementNode->getTagName () )) {
+			$content = trim ( $elementNode->getAsText());
+			$this->voteConfig = VoteConfig::parseFromXml ($content);
 		}
 	}
 }
-

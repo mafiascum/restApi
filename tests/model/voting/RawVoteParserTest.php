@@ -8,7 +8,6 @@ use mafiascum\restApi\model\voting\RawVoteTarget;
 require_once(dirname(__FILE__) . "/../../../model/voting/RawVoteParser.php");
 require_once(dirname(__FILE__) . "/../../../model/voting/RawVoteTarget.php");
 
-
 class RawVoteParserTest extends TestCase {
 	public function testParseAllRawVoteTargets() {
 		$post = "[b] Not a vote [/b]";
@@ -19,7 +18,6 @@ class RawVoteParserTest extends TestCase {
 		$post .= "[unvote] Toto [/unvote]";
 		$post .= "[quote] [vote]ignored_nested_vote[/vote][/quote]";
 		$post .= "In case you can't see: [size=100000][vote] Toto [/vote][/size]";
-
 		$actual = RawVoteParser::parseAllRawVoteTargetsFromPost ( $post );
 		$this->assertEquals ( array (
 				new RawVoteTarget ( "toto", "[b] Vote: ToTo [/b]" ),

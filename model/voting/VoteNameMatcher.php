@@ -13,9 +13,6 @@ class VoteNameMatcher {
 		$this->playerSlotArray = $playerSlotArray;
 	}
 
-	/**
-	 *
-	 */
 	public function matchExact($str) {
 		$str = strtolower ( $str );
 		foreach ( $this->playerSlotArray as $playerSlot ) {
