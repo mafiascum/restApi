@@ -13,5 +13,15 @@ class TopicPostsV1Resource extends ReadOnlyResource {
         decode_message($encoded_message, $row["bbcode_uid"]);
         $row["post_bbcode"] = $encoded_message;
     }
+
+    protected function get_post_number_subquery() {
+        global $table_prefix;
+        $sql = "(";
+        $sql = $sql . "SELECT post_id, row_number() OVER (ORDER BY post_time, post_id) - 1 post_number";
+        $sql = $sql . " FROM " . $table_prefix . "posts";
+        $sql = $sql . " WHERE topic_id = " . $this->parent_record["topic_id"];
+        $sql = $sql . ")";
+        return $sql;
+    }
 }
 ?>
