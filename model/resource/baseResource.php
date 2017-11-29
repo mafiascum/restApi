@@ -47,7 +47,7 @@ abstract class BaseResource implements IResource {
         global $table_prefix;
 
         $sql = "";
-        $sql = $sql . "SELECT " . $this->primary_key_column;
+        $sql = $sql . "SELECT " . $this->table["alias"] . "." . $this->primary_key_column;
         
         foreach ($queryObj['select'] as $alias => $column) {
             if (is_numeric($alias)) {
@@ -59,9 +59,17 @@ abstract class BaseResource implements IResource {
         
         $sql = $sql . " FROM " . $table_prefix . $this->table["from"] . " " . $this->table["alias"];
 
-        foreach ($this->left_join_tables as $left_join_table) {
-            $sql = $sql . " LEFT JOIN " . $table_prefix . $left_join_table["from"];
-            $sql = $sql . " ON " . $left_join_table["on"];
+        if (array_key_exists("left_join", $queryObj)) {
+            foreach ($queryObj["left_join"] as $left_join_table) {
+                preg_match("/func:(\w+):/", $left_join_table["from"], $matches);
+
+                if (array_key_exists(1, $matches)) {
+                    $sql = $sql . " LEFT JOIN " . preg_replace("/func:(\w+):/", $this->{$matches[1]}(), $left_join_table["from"]);
+                } else {
+                    $sql = $sql . " LEFT JOIN " . $table_prefix . $left_join_table["from"];
+                }
+                $sql = $sql . " ON " . $left_join_table["on"];
+            }
         }
         
         $sql = $sql . " WHERE 1 = 1 ";
@@ -86,6 +94,26 @@ abstract class BaseResource implements IResource {
                 $column = "lower(" . $column . ")";
                 $op = "=";
                 $value = "lower('" . $condition[1] . "')";
+                break;
+            case 'lt':
+                $column = $colmn;
+                $op = "<";
+                $value = $condition[1];
+                break;
+            case 'lte':
+                $column = $column;
+                $op = "<=";
+                $value = $condition[1];
+                break;
+            case 'gt':
+                $column = $column;
+                $op = ">";
+                $value = $condition[1];
+                break;
+            case 'gte':
+                $column = $column;
+                $op = ">=";
+                $value = $condition[1];
                 break;
             case 'like':
                 $column = $column;
@@ -113,7 +141,7 @@ abstract class BaseResource implements IResource {
                 
             $sql = $sql . " ORDER BY " . $order_column . " " . $order_direction;
         } else {
-            $sql = $sql . " ORDER BY " . $this->primary_key_column;
+            $sql = $sql . " ORDER BY " . $this->table["alias"] . "." . $this->primary_key_column;
         }
         return $sql;
     }

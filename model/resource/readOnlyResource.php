@@ -7,6 +7,7 @@ class ReadOnlyResource extends BaseResource {
     public function list($request) {
         $queryObj = array(
             'select' => $this->select_columns,
+            'left_join' => $this->left_join_tables,
             'where' => array()
         );
 
@@ -30,8 +31,9 @@ class ReadOnlyResource extends BaseResource {
 
         $queryObj = array(
             'select' => $this->select_columns,
+            'left_join' => $this->left_join_tables,
             'where' => array(
-                $this->primary_key_column => array("equals", $id)
+                $this->table["alias"] . "." . $this->primary_key_column => array("equals", $id)
             )
         );
         
