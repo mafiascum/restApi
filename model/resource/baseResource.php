@@ -48,7 +48,7 @@ abstract class BaseResource implements IResource {
 
         $sql = "";
         $sql = $sql . "SELECT " . $this->table["alias"] . "." . $this->primary_key_column;
-        
+
         foreach ($queryObj['select'] as $alias => $column) {
             if (is_numeric($alias)) {
                 $sql = $sql . ", " . $column;
@@ -56,7 +56,7 @@ abstract class BaseResource implements IResource {
                 $sql = $sql . ", " . $column . " as " . $alias;
             }
         }
-        
+
         $sql = $sql . " FROM " . $table_prefix . $this->table["from"] . " " . $this->table["alias"];
 
         if (array_key_exists("left_join", $queryObj)) {
@@ -71,7 +71,7 @@ abstract class BaseResource implements IResource {
                 $sql = $sql . " ON " . $left_join_table["on"];
             }
         }
-        
+
         $sql = $sql . " WHERE 1 = 1 ";
 
         foreach ($this->parent_record as $fk_column => $fk_value) {
@@ -120,7 +120,7 @@ abstract class BaseResource implements IResource {
                 $op = " LIKE ";
                 $value = "'%" . $condition[1] . "%'";
                 break;
-                
+
             case 'ilike':
                 $column = "lower(" . $column . ")";
                 $op = " LIKE ";
@@ -138,7 +138,7 @@ abstract class BaseResource implements IResource {
                 $order_column = $queryObj['order'];
                 $order_direction = 'ASC';
             }
-                
+
             $sql = $sql . " ORDER BY " . $order_column . " " . $order_direction;
         } else {
             $sql = $sql . " ORDER BY " . $this->table["alias"] . "." . $this->primary_key_column;
@@ -146,10 +146,17 @@ abstract class BaseResource implements IResource {
         return $sql;
     }
 
-    protected function paginate_results($result, $request) {
-        $limit = $request->variable('limit', 50);
-        $start = $request->variable('start', 0);
+    public function extract_column_values_from_request($request) {
+    	$columnValues = array();
+    	foreach($this->query_columns as $column => $op) {
+    		if ($request->is_set($column)) {
+    			$columnValues[$column] = $request->variable($column, '');
+    		}
+    	}
+    	return $columnValues;
+    }
 
+    protected function paginate_results($result, $start, $limit) {
         $unfiltered_data = array();
         while ($row = $this->db->sql_fetchrow($result)) {
             $unfiltered_data[] = $row;
@@ -182,11 +189,11 @@ abstract class BaseResource implements IResource {
                     $this->primary_key_column => array("in", $ids)
                 ),
             );
-            
+
             foreach ($this->permission_scopes as $type => $column) {
                 $queryObj['select'][] = $column;
             }
-            
+
             $sql = $this->generate_select_sql($queryObj);
             $result = $this->db->sql_query($sql);
             $permitted = $ids;
@@ -217,16 +224,16 @@ abstract class BaseResource implements IResource {
     protected function modify_read_row(&$row) {
         // no-op
     }
-    
-    public function list($request) {
+
+    public function list($start, $limit, $columnValues) {
         throw new \BadMethodCallException("Not Implemented");
     }
 
     public function create($data) {
         throw new \BadMethodCallException("Not Implemented");
     }
-    
-    public function retrieve($id, $request) {
+
+    public function retrieve($id) {
         throw new \BadMethodCallException("Not Implemented");
     }
 

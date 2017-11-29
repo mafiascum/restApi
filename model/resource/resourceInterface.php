@@ -4,12 +4,14 @@ namespace mafiascum\restApi\model\resource;
 
 interface IResource {
     public function has_permission($ids, $operation);
-    
-    public function list($request);
+
+    public function list($start, $limit, $columnValues);
+
+    public function extract_column_values_from_request($request);
 
     public function create($data);
-    
-    public function retrieve($id, $request);
+
+    public function retrieve($id);
 
     public function update($id, $data);
 
