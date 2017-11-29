@@ -6,7 +6,7 @@ require_once("manifest.php");
 use mafiascum\restApi\model\resource\ResourceManifest;
 
 class ResourceFactory {
-    private static function find_resource($db, $auth, $path, $ids) {
+    public static function find_resource($db, $auth, $path, $ids) {
         foreach($path as $node) {
             if (is_null($resource)) {
                 $resource_def = ResourceManifest::$resources[$node];
@@ -29,8 +29,6 @@ class ResourceFactory {
         }
         return $resource;
     }
-
-
 
     public static function list_resources($db, $auth, $path, $ids, $request, $shouldSerialize = false) {
         $resource = ResourceFactory::find_resource($db, $auth, $path, $ids);
