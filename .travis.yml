@@ -9,5 +9,5 @@ before_install:
   - docker pull mafiascum/forum-tester:latest
 
 script:
-    - docker run -it --link mariadb -v ./:/var/www/html/phpbb/phpBB/ext/mafiascum/restApi/ -e PHPBB_TEST_DBMS=mysqli -e PHPBB_TEST_DBHOST=test_database -e PHPBB_TEST_DBPORT=3306 -e PHPBB_TEST_DBNAME=ms_phpbb3 -e PHPBB_TEST_DBUSER=root -e PHPBB_TEST_DBPASSWD=password mafiascum/forum-tester:latest phpBB/ext/mafiascum/restApi/phpunit.xml.dist
+    - docker run -it --link test_database -v $PWD:/var/www/html/phpbb/phpBB/ext/mafiascum/restApi/ -e PHPBB_TEST_DBMS=mysqli -e PHPBB_TEST_DBHOST=test_database -e PHPBB_TEST_DBPORT=3306 -e PHPBB_TEST_DBNAME=ms_phpbb3 -e PHPBB_TEST_DBUSER=root -e PHPBB_TEST_DBPASSWD=password mafiascum/forum-tester:latest phpBB/ext/mafiascum/restApi/phpunit.xml.dist
   
