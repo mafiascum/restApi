@@ -1,9 +1,9 @@
 <?php
 namespace mafiascum\restApi\api;
 
-use mafiascum\restApi\model\resource\ReadOnlyResource;
+require_once(dirname(__FILE__) . "/../../model/resource/readOnlyResource.php");
 
-require_once('topicPosts.php');
+use mafiascum\restApi\model\resource\ReadOnlyResource;
 
 class TopicsV1Resource extends ReadOnlyResource {
     
