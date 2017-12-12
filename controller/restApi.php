@@ -6,8 +6,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 require_once(dirname(__FILE__) . "/../model/resource/resourceFactory.php");
+require_once(dirname(__FILE__) . "/../api/routes.php");
 
 use mafiascum\restApi\model\resource\ResourceFactory;
+use mafiascum\restApi\api\Routes;
 
 class RestApi {
     /* @var \phpbb\controller\helper */
@@ -48,25 +50,42 @@ class RestApi {
         $this->user_loader = $user_loader;
         $this->language = $language;
         $this->auth = $auth;
+
+        $this->params = $this->request_to_params();
+
+        $this->routes = new ResourceFactory(Routes::$routes);
+    }
+
+    protected function request_to_params() {
+        $params = array();
+        $params['limit'] = $this->request->variable('limit', 50);
+        $params['start'] = $this->request->variable('start', 0);
+
+        foreach($this->request->variable_names(\phpbb\request\request_interface::GET) as $key) {
+            if ($key != 'limit' && $key != 'start') {
+                $params[$key] = $this->db->sql_escape($this->request->variable($key, ''));
+            }
+        }
+        return $params;
     }
 
     public function topics_list() {
-        return new JsonResponse(ResourceFactory::list_resources(
+        return new JsonResponse($this->routes->list_resources(
             $this->db,
             $this->auth,
             array("topics"),
             array(),
-            $this->request
+            $this->params
         ));
     }
 
     public function topics_retrieve($id) {
-        $response = ResourceFactory::retrieve_resource(
+        $response = $this->routes->retrieve_resource(
             $this->db,
             $this->auth,
             array("topics"),
             array("topic_id" => $id),
-            $this->request,
+            $this->params,
             true
         );
         if (is_null($response)) {
@@ -76,12 +95,12 @@ class RestApi {
     }
 
     public function topics_posts_list($id) {
-        return new JsonResponse(ResourceFactory::list_resources(
+        return new JsonResponse($this->routes->list_resources(
             $this->db,
             $this->auth,
             array("topics", "posts"),
             array("topic_id" => $id),
-            $this->request,
+            $this->params,
             true
         ));
     }

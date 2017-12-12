@@ -1,15 +1,12 @@
 <?php
 
-namespace mafiascum\restApi\model\resource;
+namespace mafiascum\restApi\api;
 
 require_once(dirname(__FILE__) . "/v1/topics.php");
 require_once(dirname(__FILE__) . "/v1/topicPosts.php");
 
-use mafiascum\restApi\model\resource\TopicsV1Resource;
-use mafiascum\restApi\model\resource\TopicPostsV1Resource;
-
-class ResourceManifest {
-    public static $resources = array(
+class Routes {
+    public static $routes = array(
         "topics" => array(
             "impl" => TopicsV1Resource::class,
             "table" => array(

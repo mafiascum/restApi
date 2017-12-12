@@ -1,5 +1,7 @@
 <?php
-namespace mafiascum\restApi\model\resource;
+namespace mafiascum\restApi\api;
+
+use mafiascum\restApi\model\resource\ReadOnlyResource;
 
 class TopicPostsV1Resource extends ReadOnlyResource {
     public function to_json($data) {

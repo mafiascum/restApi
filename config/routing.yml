@@ -1,11 +1,14 @@
 topics_list_v1_route:
-    path: /api/v1/topics
-    defaults: { _controller: mafiascum.restApi.restApiController:topics_list }
+  path: /api/v1/topics
+  defaults: { _controller: mafiascum.restApi.restApiController:topics_list }
+  methods:  [GET]
 
 topics_retrieve_v1_route:
-    path: /api/v1/topics/{id}
-    defaults: { _controller: mafiascum.restApi.restApiController:topics_retrieve }
-
+  path: /api/v1/topics/{id}
+  defaults: { _controller: mafiascum.restApi.restApiController:topics_retrieve }
+  methods:  [GET]
+  
 topics_posts_v1_route:
-    path: /api/v1/topics/{id}/posts
-    defaults: { _controller: mafiascum.restApi.restApiController:topics_posts_list }
+  path: /api/v1/topics/{id}/posts
+  defaults: { _controller: mafiascum.restApi.restApiController:topics_posts_list }
+  methods:  [GET]

@@ -1,5 +1,7 @@
 <?php
-namespace mafiascum\restApi\model\resource;
+namespace mafiascum\restApi\api;
+
+use mafiascum\restApi\model\resource\ReadOnlyResource;
 
 require_once('topicPosts.php');
 

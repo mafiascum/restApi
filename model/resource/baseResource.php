@@ -96,24 +96,32 @@ abstract class BaseResource implements IResource {
                 $value = "lower('" . $condition[1] . "')";
                 break;
             case 'lt':
-                $column = $colmn;
+                $column = $column;
                 $op = "<";
-                $value = $condition[1];
+                if (is_numeric($condition[1])) {
+                    $value = $condition[1];
+                }
                 break;
             case 'lte':
                 $column = $column;
                 $op = "<=";
-                $value = $condition[1];
+                if (is_numeric($condition[1])) {
+                    $value = $condition[1];
+                }
                 break;
             case 'gt':
                 $column = $column;
                 $op = ">";
-                $value = $condition[1];
+                if (is_numeric($condition[1])) {
+                    $value = $condition[1];
+                }
                 break;
             case 'gte':
                 $column = $column;
                 $op = ">=";
-                $value = $condition[1];
+                if (is_numeric($condition[1])) {
+                    $value = $condition[1];
+                }
                 break;
             case 'like':
                 $column = $column;
@@ -127,7 +135,9 @@ abstract class BaseResource implements IResource {
                 $value = "lower('%" . $condition[1] . "%')";
                 break;
             }
-            $sql = $sql . " AND " . $column . $op . $value;
+            if (isset($value)) {
+                $sql = $sql . " AND " . $column . $op . $value;
+            }
         }
 
         if (array_key_exists('order', $queryObj)) {
@@ -146,9 +156,9 @@ abstract class BaseResource implements IResource {
         return $sql;
     }
 
-    protected function paginate_results($result, $request) {
-        $limit = $request->variable('limit', 50);
-        $start = $request->variable('start', 0);
+    protected function paginate_results($result, $params) {
+        $limit = $params['limit'];
+        $start = $params['start'];
 
         $unfiltered_data = array();
         while ($row = $this->db->sql_fetchrow($result)) {
@@ -218,7 +228,7 @@ abstract class BaseResource implements IResource {
         // no-op
     }
     
-    public function list($request) {
+    public function list($params) {
         throw new \BadMethodCallException("Not Implemented");
     }
 
@@ -226,7 +236,7 @@ abstract class BaseResource implements IResource {
         throw new \BadMethodCallException("Not Implemented");
     }
     
-    public function retrieve($id, $request) {
+    public function retrieve($id, $params) {
         throw new \BadMethodCallException("Not Implemented");
     }
 

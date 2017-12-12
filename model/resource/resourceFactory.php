@@ -1,15 +1,15 @@
 <?php
 namespace mafiascum\restApi\model\resource;
 
-require_once("manifest.php");
-
-use mafiascum\restApi\model\resource\ResourceManifest;
-
 class ResourceFactory {
-    private static function find_resource($db, $auth, $path, $ids) {
+    public function __construct($routes) {
+        $this->routes = $routes;
+    }
+
+    private function find_resource($db, $auth, $path, $ids) {
         foreach($path as $node) {
             if (is_null($resource)) {
-                $resource_def = ResourceManifest::$resources[$node];
+                $resource_def = $this->routes[$node];
                 $parent_record = array();
             } else {
                 $resource_def = $resource->get_subresource_def($node);
@@ -30,9 +30,9 @@ class ResourceFactory {
         return $resource;
     }
 
-    public static function list_resources($db, $auth, $path, $ids, $request, $shouldSerialize = false) {
-        $resource = ResourceFactory::find_resource($db, $auth, $path, $ids);
-        $data = ResourceFactory::find_resource($db, $auth, $path, $ids)->list($request);
+    public function list_resources($db, $auth, $path, $ids, $params, $shouldSerialize = false) {
+        $resource = $this->find_resource($db, $auth, $path, $ids);
+        $data = $resource->list($params);
         if ($shouldSerialize) {
             $data["data"] = array_map(
                 function ($item) use ($resource) {
@@ -44,15 +44,41 @@ class ResourceFactory {
         return $data;
     }
 
-    public static function retrieve_resource($db, $auth, $path, $ids, $request, $shouldSerialize = false) {
-        $resource = ResourceFactory::find_resource($db, $auth, $path, $ids);
+    public function retrieve_resource($db, $auth, $path, $ids, $params, $shouldSerialize = false) {
+        $resource = $this->find_resource($db, $auth, $path, $ids);
         $pk_column = $resource->get_primary_key_column();
-        $data = $resource->retrieve($ids[$pk_column], $request);
+        $data = $resource->retrieve($ids[$pk_column], $params);
         if ($shouldSerialize) {
             return $resource->to_json($data);
         } else {
             return $data;
         }
     }
+
+    // public function delete_resource($db, $auth, $path, $ids) {
+    //     $resource = $this->find_resource($db, $auth, $path, $ids);
+    //     $pk_column = $resource->get_primary_key_column();
+    //     $resource->delete($ids[$pk_column], $params);
+    // }
+
+    // public function create_resource($db, $auth, $path, $ids, $data, $shouldDeserialize = false) {
+    //     $resource = $this->find_resource($db, $auth, $path, $ids);
+    //     if ($shouldDeserialize) {
+    //         return $resource->create($resource->from_json($data));
+    //     } else {
+    //         return $resource->create($data);
+    //     }
+    // }
+
+    // public function update_resource($db, $auth, $path, $ids, $data, $shouldDeserialize = false) {
+    //     $resource = $this->find_resource($db, $auth, $path, $ids);
+    //     $pk_column = $resource->get_primary_key_column();
+    //     $id = $ids[$pk_column];
+    //     if ($shouldDeserialize) {
+    //         return $resource->update($id, $resource->from_json($data));
+    //     } else {
+    //         return $resource->update($id, $data);
+    //     }
+    // }
 }
 ?>
