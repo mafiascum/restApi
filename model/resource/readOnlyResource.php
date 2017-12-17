@@ -39,8 +39,12 @@ class ReadOnlyResource extends BaseResource {
         $sql = $this->generate_select_sql($queryObj);
         $result = $this->db->sql_query($sql);
         $row = $this->db->sql_fetchrow($result);
-        $this->modify_read_row($row);
-        return $row;
+        if ($row) {
+            $this->modify_read_row($row);
+            return $row;
+        } else {
+            return null;
+        }
     }
 
     public function to_json($data) {

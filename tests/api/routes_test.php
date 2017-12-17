@@ -108,7 +108,7 @@ class ResourceTest extends \phpbb_database_test_case {
             $this->auth,
             array("topics"),
             array("topic_id" => 1),
-            array("limit" => 2, "start" => 8)
+            array()
         );
 
         $this->assertEquals(array(
@@ -177,6 +177,77 @@ class ResourceTest extends \phpbb_database_test_case {
         $this->assertEquals(2, $response['total']);
         $this->assertEquals(null, $response['next']);
         $this->assertEquals(null, $response['prev']);
+    }
+
+    public function test_create() {
+        $this->auth
+            ->method("acl_get")
+            ->with("f_read", 1)
+            ->willReturn(true);
+
+        $result = $this->routes->create_resource(
+            $this->db,
+            $this->auth,
+            array("topics"),
+            array(),
+            array(
+                "forum_id" => 1,
+                "topic_title" => "bonesaw",
+                "topic_poster" => 1001,
+            )
+        );
+
+        $this->assertEquals("1", $result["forum_id"]);
+        $this->assertEquals("bonesaw", $result["topic_title"]);
+        $this->assertEquals("1001", $result["topic_poster"]);
+        $this->assertEquals("tom", $result["username"]);
+    }
+
+    public function test_update() {
+        $this->auth
+            ->method("acl_get")
+            ->with("f_read", 1)
+            ->willReturn(true);
+
+        $result = $this->routes->update_resource(
+            $this->db,
+            $this->auth,
+            array("topics"),
+            array("topic_id" => 1),
+            array(
+                "topic_poster" => 1002,
+            )
+        );
+
+        $this->assertEquals("1", $result["forum_id"]);
+        $this->assertEquals("1", $result["topic_id"]);
+        $this->assertEquals("aaaaa", $result["topic_title"]);
+        $this->assertEquals("1002", $result["topic_poster"]);
+        $this->assertEquals("rick", $result["username"]);
+    }
+
+    public function test_delete() {
+        $this->auth
+            ->method("acl_get")
+            ->with("f_read", 1)
+            ->willReturn(true);
+
+        $this->routes->delete_resource(
+            $this->db,
+            $this->auth,
+            array("topics"),
+            array("topic_id" => 1)
+        );
+
+        $response = $this->routes->retrieve_resource(
+            $this->db,
+            $this->auth,
+            array("topics"),
+            array("topic_id" => 1),
+            array()
+        );
+
+        $this->assertEquals(null, $response);
     }
 }
 ?>

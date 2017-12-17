@@ -1,10 +1,10 @@
 <?php
 namespace mafiascum\restApi\api;
 
-require_once(dirname(__FILE__) . "/../../model/resource/readOnlyResource.php");
+require_once(dirname(__FILE__) . "/../../model/resource/readWriteResource.php");
 
-use mafiascum\restApi\model\resource\ReadOnlyResource;
+use mafiascum\restApi\model\resource\ReadWriteResource;
 
-class TopicsV1Resource extends ReadOnlyResource {
+class TopicsV1Resource extends ReadWriteResource {
     
 }

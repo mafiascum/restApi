@@ -55,30 +55,30 @@ class ResourceFactory {
         }
     }
 
-    // public function delete_resource($db, $auth, $path, $ids) {
-    //     $resource = $this->find_resource($db, $auth, $path, $ids);
-    //     $pk_column = $resource->get_primary_key_column();
-    //     $resource->delete($ids[$pk_column], $params);
-    // }
+    public function delete_resource($db, $auth, $path, $ids) {
+        $resource = $this->find_resource($db, $auth, $path, $ids);
+        $pk_column = $resource->get_primary_key_column();
+        $resource->delete($ids[$pk_column], $params);
+    }
 
-    // public function create_resource($db, $auth, $path, $ids, $data, $shouldDeserialize = false) {
-    //     $resource = $this->find_resource($db, $auth, $path, $ids);
-    //     if ($shouldDeserialize) {
-    //         return $resource->create($resource->from_json($data));
-    //     } else {
-    //         return $resource->create($data);
-    //     }
-    // }
+    public function create_resource($db, $auth, $path, $ids, $data, $shouldDeserialize = false) {
+        $resource = $this->find_resource($db, $auth, $path, $ids);
+        if ($shouldDeserialize) {
+            return $resource->create($resource->from_json($data));
+        } else {
+            return $resource->create($data);
+        }
+    }
 
-    // public function update_resource($db, $auth, $path, $ids, $data, $shouldDeserialize = false) {
-    //     $resource = $this->find_resource($db, $auth, $path, $ids);
-    //     $pk_column = $resource->get_primary_key_column();
-    //     $id = $ids[$pk_column];
-    //     if ($shouldDeserialize) {
-    //         return $resource->update($id, $resource->from_json($data));
-    //     } else {
-    //         return $resource->update($id, $data);
-    //     }
-    // }
+    public function update_resource($db, $auth, $path, $ids, $data, $shouldDeserialize = false) {
+        $resource = $this->find_resource($db, $auth, $path, $ids);
+        $pk_column = $resource->get_primary_key_column();
+        $id = $ids[$pk_column];
+        if ($shouldDeserialize) {
+            return $resource->update($id, $resource->from_json($data));
+        } else {
+            return $resource->update($id, $data);
+        }
+    }
 }
 ?>
