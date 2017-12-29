@@ -35,6 +35,7 @@ class Routes {
                     "required" => true,
                 ),
             ),
+            "validators" => array(),
             "subresources" => array(
                 "posts" => array(
                     "impl" => TopicPostsV1Resource::class,
@@ -74,6 +75,7 @@ class Routes {
                         "post_text" => array(),
                         "post_time" => array(),
                     ),
+                    "validators" => array(),
                     "subresources" => array(),
                 )
             ),

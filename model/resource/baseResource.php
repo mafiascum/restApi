@@ -26,6 +26,10 @@ abstract class BaseResource implements IResource {
 
     protected $permission_scopes;
 
+    protected $fields;
+
+    protected $validators;
+
     protected $sub_resources;
 
     protected $parent_record;
@@ -42,6 +46,7 @@ abstract class BaseResource implements IResource {
         $this->query_columns = $spec["query_columns"];
         $this->permission_scopes = $spec["permission_scopes"];
         $this->fields = $spec["fields"];
+        $this->validators = $spec["validators"];
         $this->subresources = $spec["subresources"];
 
         $this->parent_record = $parent_record;

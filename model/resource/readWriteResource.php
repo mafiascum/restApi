@@ -84,6 +84,18 @@ class ReadWriteResource extends ReadOnlyResource {
     public function validate($id, $jsonData) {
         $errors = array();
 
+        //do all stock field level validation as implemented
+        $this->validate_required($errors, $id, $jsonData);
+
+        //loop through custom validators as instance members
+        foreach ($this->validators as $validator) {
+            $this->{$validator}($errors, $id, $jsonData);
+        }
+
+        return $errors;
+    }
+
+    public function validate_required(&$errors, $id, $jsonData) {
         if (isset($id)) {
             $resource = $this->retrieve($id);
         } else {
@@ -99,7 +111,5 @@ class ReadWriteResource extends ReadOnlyResource {
                 );
             }
         }
-
-        return $errors;
     }
 }
