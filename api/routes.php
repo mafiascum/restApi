@@ -21,6 +21,20 @@ class Routes {
             ),
             "query_columns" => array(),
             "permission_scopes" => array("f" => "forum_id"),
+            "fields" => array(
+                "topic_id" => array(
+                    "primary_key" => true,
+                ),
+                "forum_id" => array(
+                    "required" => true,
+                ),
+                "topic_title" => array(
+                    "required" => true,
+                ),
+                "topic_poster" => array(
+                    "required" => true,
+                ),
+            ),
             "subresources" => array(
                 "posts" => array(
                     "impl" => TopicPostsV1Resource::class,
@@ -50,6 +64,16 @@ class Routes {
                                               "username" => "ilike",
                                               "post_number" => "gte"),
                     "permission_scopes" => array("f" => "forum_id"),
+                    "fields" => array(
+                        "post_id" => array(
+                            "primary_key" => true,
+                        ),
+                        "poster_id" => array(
+                            "required" => true,
+                        ),
+                        "post_text" => array(),
+                        "post_time" => array(),
+                    ),
                     "subresources" => array(),
                 )
             ),

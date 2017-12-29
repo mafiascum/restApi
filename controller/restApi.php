@@ -69,13 +69,25 @@ class RestApi {
         return $params;
     }
 
+    public static function resource_to_json($response) {
+        if (isset($response["status"])) {
+            $status = $response["status"];
+            unset($response["status"]);
+            return new JsonResponse($response, $status);
+        } else {
+            return new JsonResponse($response);
+        }
+    }
+
     public function topics_list() {
-        return new JsonResponse($this->routes->list_resources(
+        return self::resource_to_json($this->routes->list_resources(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics"),
             array(),
-            $this->params
+            $this->params,
+            true
         ));
     }
 
@@ -83,21 +95,31 @@ class RestApi {
         $response = $this->routes->retrieve_resource(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics"),
             array("topic_id" => $id),
             $this->params,
             true
         );
         if (is_null($response)) {
-            return new JsonResponse(array("reason" => "Resource with id '" . $id . "' does not exist."), Response::HTTP_NOT_FOUND);
+            return self::resource_to_json(array(
+                "errors" => array(
+                    array(
+                        "type" => "not_found",
+                        "message" => $this->language->lang("ERROR_NOT_FOUND"),
+                    ),
+                ),
+                "status" => Response::HTTP_NOT_FOUND));
+        } else {
+            return self::resource_to_json($response);
         }
-        return new JsonResponse($response);
     }
 
     public function topics_posts_list($id) {
-        return new JsonResponse($this->routes->list_resources(
+        return self::resource_to_json($this->routes->list_resources(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics", "posts"),
             array("topic_id" => $id),
             $this->params,

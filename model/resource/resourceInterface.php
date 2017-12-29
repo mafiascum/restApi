@@ -18,5 +18,7 @@ interface IResource {
     public function to_json($data);
 
     public function from_json($jsonData);
+
+    public function validate($id, $jsonData);
 }
 ?>

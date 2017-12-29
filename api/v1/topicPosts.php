@@ -1,11 +1,11 @@
 <?php
 namespace mafiascum\restApi\api;
 
-require_once(dirname(__FILE__) . "/../../model/resource/readOnlyResource.php");
+require_once(dirname(__FILE__) . "/../../model/resource/readWriteResource.php");
 
-use mafiascum\restApi\model\resource\ReadOnlyResource;
+use mafiascum\restApi\model\resource\ReadWriteResource;
 
-class TopicPostsV1Resource extends ReadOnlyResource {
+class TopicPostsV1Resource extends ReadWriteResource {
     public function to_json($data) {
         $jsonData = $data;
         $jsonData["post_time"] = date("c", $jsonData["post_time"]);

@@ -1,4 +1,18 @@
 services:
+    mafiascum.restApi.listener:
+        class: mafiascum\restApi\event\main_listener
+        arguments:
+            - '@controller.helper'
+            - '@template'
+            - '@request'
+            - '@dbal.conn'
+            - '@user'
+            - '@user_loader'
+            - '@language'
+            - '@auth'
+            - '%core.table_prefix%'
+        tags:
+            - { name: event.listener }
     mafiascum.restApi.restApiController:
         class: mafiascum\restApi\controller\RestApi
         arguments:

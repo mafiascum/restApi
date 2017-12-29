@@ -12,6 +12,8 @@ abstract class BaseResource implements IResource {
 
     protected $auth;
 
+    protected $language;
+
     protected $table;
 
     protected $primary_key_column;
@@ -28,9 +30,10 @@ abstract class BaseResource implements IResource {
 
     protected $parent_record;
 
-    public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\auth\auth $auth, $spec, $parent_record) {
+    public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\auth\auth $auth, \phpbb\language\language $language, $spec, $parent_record) {
         $this->db = $db;
         $this->auth = $auth;
+        $this->language = $language;
 
         $this->table = $spec["table"];
         $this->select_columns = $spec["select_columns"];
@@ -38,6 +41,7 @@ abstract class BaseResource implements IResource {
         $this->left_join_tables = $spec["left_join_tables"];
         $this->query_columns = $spec["query_columns"];
         $this->permission_scopes = $spec["permission_scopes"];
+        $this->fields = $spec["fields"];
         $this->subresources = $spec["subresources"];
 
         $this->parent_record = $parent_record;
@@ -253,6 +257,10 @@ abstract class BaseResource implements IResource {
     }
 
     public function from_json($jsonData) {
+        throw new \BadMethodCallException("Not Implemented");
+    }
+
+    public function validate($id, $jsonData) {
         throw new \BadMethodCallException("Not Implemented");
     }
 }

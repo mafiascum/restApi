@@ -26,9 +26,16 @@ class ReadWriteResource extends ReadOnlyResource {
         $columns = array();
         $values = array();
         foreach($data as $column => $value) {
-            $columns[] = $column;
-            $values[] = $value;
+            if (array_key_exists($column, $this->fields)) {
+                $columns[] = $column;
+                $values[] = $value;
+            }
         }
+        foreach($this->parent_record as $fk_column => $fk_value) {
+            $columns[] = $fk_column;
+            $values[] = $fk_value;
+        }
+
         $sql = $sql . join($columns, ",");
         $sql = $sql . ") VALUES (";
         $sql = $sql . DbUtils::array_to_quoted_string($values);
@@ -53,7 +60,13 @@ class ReadWriteResource extends ReadOnlyResource {
 
         $updates = array();
         foreach($data as $column => $value) {
-            $updates[] = $column . " = '" . $value . "'";
+            if (array_key_exists($column, $this->fields)) {
+                $updates[] = $column . " = '" . $value . "'";
+            }
+        }
+
+        if (empty($updates)) {
+            return $this->retrieve($id, array());
         }
         $sql = $sql . join($updates, ",");
         $sql = $sql . " WHERE 1=1 ";
@@ -62,5 +75,31 @@ class ReadWriteResource extends ReadOnlyResource {
         $result = $this->db->sql_query($sql);
 
         return $this->retrieve($id, array());
+    }
+
+    public function from_json($jsonData) {
+        return $jsonData;
+    }
+
+    public function validate($id, $jsonData) {
+        $errors = array();
+
+        if (isset($id)) {
+            $resource = $this->retrieve($id);
+        } else {
+            $resource = array();
+        }
+
+        foreach ($this->fields as $field => $validation) {
+            if ($validation["required"] && !isset($resource[$field]) && (!isset($jsonData[$field]) || is_null($jsonData[$field]) || $jsonData[$field] == "")) {
+                $errors[] = array(
+                    "field" => $field,
+                    "type" => "required",
+                    "message" => $this->language->lang("VALIDATION_ERROR_REQUIRED", $field),
+                );
+            }
+        }
+
+        return $errors;
     }
 }

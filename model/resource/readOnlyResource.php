@@ -23,7 +23,7 @@ class ReadOnlyResource extends BaseResource {
         return $response;
     }
 
-    public function retrieve($id, $params) {
+    public function retrieve($id, $params = array()) {
         if (empty($this->has_permission(array($id), "get"))) {
             return null;
         }

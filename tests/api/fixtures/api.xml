@@ -110,7 +110,7 @@
     <column>forum_id</column>
     <column>post_text</column>
     <column>bbcode_uid</column>
-    <column>bbcode_bitfield</column>
+    <column>post_time</column>
     <row>
       <value>1</value>
       <value>1</value>
@@ -118,7 +118,7 @@
       <value>1</value>
       <value>test</value>
       <value>aaaaaaaa</value>
-      <value></value>
+      <value>1514584153</value>
     </row>
     <row>
       <value>2</value>
@@ -127,7 +127,7 @@
       <value>1</value>
       <value>test</value>
       <value>aaaaaaaa</value>
-      <value></value>
+      <value>1514584153</value>
     </row>
     <row>
       <value>3</value>
@@ -136,7 +136,7 @@
       <value>1</value>
       <value>test</value>
       <value>aaaaaaaa</value>
-      <value></value>
+      <value>1514584153</value>
     </row>
     <row>
       <value>4</value>
@@ -145,7 +145,7 @@
       <value>1</value>
       <value>test</value>
       <value>aaaaaaaa</value>
-      <value></value>
+      <value>1514584153</value>
     </row>
   </table>
 

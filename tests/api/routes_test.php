@@ -36,6 +36,10 @@ class ResourceTest extends \phpbb_database_test_case {
                     ->disableOriginalConstructor()
                     ->getMock();
 
+        $this->language = $this->getMockBuilder('\phpbb\language\language')
+                        ->disableOriginalConstructor()
+                        ->getMock();
+
         $this->routes = new ResourceFactory(Routes::$routes);
     }
 
@@ -48,6 +52,7 @@ class ResourceTest extends \phpbb_database_test_case {
         $response = $this->routes->list_resources(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics"),
             array(),
             array()
@@ -60,6 +65,7 @@ class ResourceTest extends \phpbb_database_test_case {
         $response = $this->routes->list_resources(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics"),
             array(),
             array("limit" => 2)
@@ -73,6 +79,7 @@ class ResourceTest extends \phpbb_database_test_case {
         $response = $this->routes->list_resources(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics"),
             array(),
             array("limit" => 2, "start" => 3)
@@ -86,6 +93,7 @@ class ResourceTest extends \phpbb_database_test_case {
         $response = $this->routes->list_resources(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics"),
             array(),
             array("limit" => 2, "start" => 8)
@@ -106,6 +114,7 @@ class ResourceTest extends \phpbb_database_test_case {
         $response = $this->routes->retrieve_resource(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics"),
             array("topic_id" => 1),
             array()
@@ -129,6 +138,7 @@ class ResourceTest extends \phpbb_database_test_case {
         $response = $this->routes->list_resources(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics", "posts"),
             array("topic_id" => 1),
             array()
@@ -142,6 +152,7 @@ class ResourceTest extends \phpbb_database_test_case {
         $response = $this->routes->list_resources(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics", "posts"),
             array("topic_id" => 1),
             array("poster_id" => 1001)
@@ -155,6 +166,7 @@ class ResourceTest extends \phpbb_database_test_case {
         $response = $this->routes->list_resources(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics", "posts"),
             array("topic_id" => 1),
             array("username" => "tom")
@@ -168,6 +180,7 @@ class ResourceTest extends \phpbb_database_test_case {
         $response = $this->routes->list_resources(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics", "posts"),
             array("topic_id" => 1),
             array("post_number" => "1")
@@ -188,6 +201,7 @@ class ResourceTest extends \phpbb_database_test_case {
         $result = $this->routes->create_resource(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics"),
             array(),
             array(
@@ -212,6 +226,7 @@ class ResourceTest extends \phpbb_database_test_case {
         $result = $this->routes->update_resource(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics"),
             array("topic_id" => 1),
             array(
@@ -235,6 +250,7 @@ class ResourceTest extends \phpbb_database_test_case {
         $this->routes->delete_resource(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics"),
             array("topic_id" => 1)
         );
@@ -242,12 +258,111 @@ class ResourceTest extends \phpbb_database_test_case {
         $response = $this->routes->retrieve_resource(
             $this->db,
             $this->auth,
+            $this->language,
             array("topics"),
             array("topic_id" => 1),
             array()
         );
 
         $this->assertEquals(null, $response);
+    }
+
+    public function test_validation() {
+        $this->auth
+            ->method("acl_get")
+            ->with("f_read", 1)
+            ->willReturn(true);
+
+        $this->language
+            ->method("lang")
+            ->with("VALIDATION_ERROR_REQUIRED", "topic_title")
+            ->willReturn("topic_title is a required field.");
+        
+        $response = $this->routes->create_resource(
+            $this->db,
+            $this->auth,
+            $this->language,
+            array("topics"),
+            array(),
+            array(
+                "forum_id" => 1,
+                "topic_poster" => 1001,
+            ),
+            true
+        );
+
+        $this->assertEquals(array(
+            "status" => 400,
+            "errors" => array(
+                array(
+                    "field" => "topic_title",
+                    "type" => "required",
+                    "message" => "topic_title is a required field.",
+                ),
+            ),
+        ), $response);
+    }
+
+    public function test_serialization() {
+        $this->auth
+            ->method("acl_get")
+            ->with("f_read", 1)
+            ->willReturn(true);
+
+        $response = $this->routes->retrieve_resource(
+            $this->db,
+            $this->auth,
+            $this->language,
+            array("topics", "posts"),
+            array("topic_id" => 1, "post_id" => 1),
+            array(),
+            true
+        );
+
+        $this->assertEquals(array(
+            "topic_id"        => "1",
+            "post_id"         => "1",
+            "poster_id"       => "1001",
+            "username"        => "tom",
+            "forum_id"        => "1",
+            "post_text"       => "test",
+            "bbcode_uid"      => "aaaaaaaa",
+            "bbcode_bitfield" => "",
+            "post_time"       => "2017-12-29T21:49:13+00:00",
+            "post_number"     => "0",
+            "post_bbcode"     => "test",
+        ), $response);
+    }
+
+    public function test_deserialization() {
+        $this->auth
+            ->method("acl_get")
+            ->with("f_read", 1)
+            ->willReturn(true);
+
+        $response = $this->routes->update_resource(
+            $this->db,
+            $this->auth,
+            $this->language,
+            array("topics", "posts"),
+            array("topic_id" => 1, "post_id" => 1),
+            array("post_time" => "1514584956"),
+            true
+        );
+
+        $this->assertEquals(array(
+            "topic_id"        => "1",
+            "post_id"         => "1",
+            "poster_id"       => "1001",
+            "username"        => "tom",
+            "forum_id"        => "1",
+            "post_text"       => "test",
+            "bbcode_uid"      => "aaaaaaaa",
+            "bbcode_bitfield" => "",
+            "post_time"       => "2017-12-29T22:02:36+00:00",
+            "post_number"     => "2",
+            "post_bbcode"     => "test",
+        ), $response);
     }
 }
 ?>
