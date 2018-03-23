@@ -10,6 +10,7 @@ require_once(dirname(__FILE__) . "/../api/routes.php");
 
 use mafiascum\restApi\model\resource\ResourceFactory;
 use mafiascum\restApi\api\Routes;
+use Exception;
 
 class RestApi {
     /* @var \phpbb\controller\helper */
@@ -30,11 +31,11 @@ class RestApi {
     /* @var \phpbb\user_loader */
     protected $user_loader;
 
-    /* @var \phpbb\auth\auth */
-    protected $auth;
-
     /* phpbb\language\language */
     protected $language;
+
+    /* @var \phpbb\auth\auth */
+    protected $auth;
 
 
     // resources
@@ -42,6 +43,8 @@ class RestApi {
 
     public function __construct(\phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\request\request $request, \phpbb\db\driver\driver_interface $db,  \phpbb\user $user, \phpbb\user_loader $user_loader, \phpbb\language\language $language, \phpbb\auth\auth $auth)
     {
+        global $table_prefix;
+
         $this->helper = $helper;
         $this->template = $template;
         $this->request = $request;
@@ -54,6 +57,25 @@ class RestApi {
         $this->params = $this->request_to_params();
 
         $this->routes = new ResourceFactory(Routes::$routes);
+    }
+
+    private function getUser() {
+        $apiAuthHeader = $this->request->header('X-Mafiascum-Api-Secret');
+        
+        if ($apiAuthHeader == getenv('API_CLIENT_SHARED_KEY')) {
+            return $this->request->header('X-Mafiascum-Api-User') ?: ANONYMOUS;
+        } else {
+            return null;
+        }
+    }
+
+    private function requireLogin() {
+        $userId = $this->getUser();
+        if ($userId == null) {
+            throw new Exception("ERROR_UNAUTHORIZED");
+        } else {
+            $this->user->session_create($userId);
+        }
     }
 
     protected function request_to_params() {
@@ -116,6 +138,19 @@ class RestApi {
     }
 
     public function topics_posts_list($id) {
+        try {
+            $this->requireLogin();
+        } catch (\Exception $e) {
+            return self::resource_to_json(array(
+                "errors" => array(
+                    array(
+                        "type" => "unauthorized",
+                        "message" => $this->language->lang($e->getMessage()),
+                    ),
+                ),
+                "status" => Response::HTTP_UNAUTHORIZED));
+        }
+        
         return self::resource_to_json($this->routes->list_resources(
             $this->db,
             $this->auth,
