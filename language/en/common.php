@@ -19,5 +19,6 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
     "ERROR_NOT_FOUND" => "The requested resource was not found.",
+    "ERROR_UNAUTHORIZED" => "Access is denied due to invalid credentials.",
     "VALIDATION_ERROR_REQUIRED" => "%s is a required field.",
 ));
