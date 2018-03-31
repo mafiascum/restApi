@@ -78,6 +78,17 @@ class RestApi {
         }
     }
 
+    private function respondUnauthorized($e) {
+        return self::resource_to_json(array(
+            "errors" => array(
+                array(
+                    "type" => "unauthorized",
+                    "message" => $this->language->lang($e->getMessage()),
+                ),
+            ),
+            "status" => Response::HTTP_UNAUTHORIZED));
+    }
+
     protected function request_to_params() {
         $params = array();
         $params['limit'] = $this->request->variable('limit', 50);
@@ -102,6 +113,12 @@ class RestApi {
     }
 
     public function topics_list() {
+        try {
+            $this->requireLogin();
+        } catch (\Exception $e) {
+            return $this->respondUnauthorized($e);
+        }
+        
         return self::resource_to_json($this->routes->list_resources(
             $this->db,
             $this->auth,
@@ -114,6 +131,12 @@ class RestApi {
     }
 
     public function topics_retrieve($id) {
+        try {
+            $this->requireLogin();
+        } catch (\Exception $e) {
+            return $this->respondUnauthorized($e);
+        }
+        
         $response = $this->routes->retrieve_resource(
             $this->db,
             $this->auth,
@@ -141,14 +164,7 @@ class RestApi {
         try {
             $this->requireLogin();
         } catch (\Exception $e) {
-            return self::resource_to_json(array(
-                "errors" => array(
-                    array(
-                        "type" => "unauthorized",
-                        "message" => $this->language->lang($e->getMessage()),
-                    ),
-                ),
-                "status" => Response::HTTP_UNAUTHORIZED));
+            return $this->respondUnauthorized($e);
         }
         
         return self::resource_to_json($this->routes->list_resources(
