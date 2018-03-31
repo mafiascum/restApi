@@ -14,7 +14,7 @@ services:
         tags:
             - { name: event.listener }
     mafiascum.restApi.restApiController:
-        class: mafiascum\restApi\controller\RestApi
+        class: mafiascum\restApi\controller\main
         arguments:
             - '@controller.helper'
             - '@template'

@@ -12,7 +12,7 @@ use mafiascum\restApi\model\resource\ResourceFactory;
 use mafiascum\restApi\api\Routes;
 use Exception;
 
-class RestApi {
+class main {
     /* @var \phpbb\controller\helper */
     protected $helper;
 
